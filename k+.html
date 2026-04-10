@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Anomalies du bilan du potassium - Amboss Style</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f4f7f9;
+        }
+        .content-card {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #1a5a96;
+            border-bottom: 2px solid #1a5a96;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #1a5a96;
+            background-color: #eef4f9;
+            padding: 10px;
+            border-left: 5px solid #1a5a96;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #2c3e50;
+            text-decoration: underline;
+            margin-top: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+            position: relative;
+        }
+        li::before {
+            content: "•";
+            color: #1a5a96;
+            font-weight: bold;
+            display: inline-block; 
+            width: 1em;
+            margin-left: -1em;
+        }
+        .nested {
+            margin-left: 20px;
+            border-left: 1px dashed #ccc;
+            padding-left: 15px;
+        }
+        .keyword {
+            color: #1a5a96;
+            text-decoration: underline;
+            text-decoration-style: solid;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .keyword:hover {
+            background-color: #eef4f9;
+        }
+        /* Tooltip styling */
+        .tooltip {
+            visibility: hidden;
+            width: 250px;
+            background-color: #353b48;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%; 
+            left: 50%;
+            margin-left: -125px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.9em;
+            font-weight: normal;
+            line-height: 1.4;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+        }
+        .keyword:active .tooltip, .keyword:focus .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        b { color: #000; }
+    </style>
+</head>
+<body>
+
+<div class="content-
