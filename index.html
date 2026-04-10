@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE MEDIVAULT</title>
+    <style>
+        :root {
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent: #c5a059;
+            --text: #ffffff;
+            --bg: #050505;
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(circle at top, #1a1a1a 0%, var(--bg) 100%);
+            color: var(--text);
+            font-family: 'Inter', -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .vault-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            font-weight: 200;
+            letter-spacing: 10px;
+            color: var(--accent);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.4rem;
+        }
+
+        /* Access Form */
+        #login-zone { text-align: center; }
+        input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            color: white;
+            width: 80%;
+            text-align: center;
+            outline: none;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: var(--accent);
+            color: black;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Section Styling */
+        .section-title {
+            color: var(--accent);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin: 30px 0 15px 5px;
+            border-left: 2px solid var(--accent);
+            padding-left: 10px;
+        }
+
+        .lecture-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: rgba(255,255,255,0.8);
+            transition: 0.3s;
+        }
+
+        .lecture-item:hover {
+            background: rgba(197, 160, 89, 0.08);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        #admin-panel {
+            display: none;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="vault-card">
+    <h1>THE MEDIVAULT</h1>
+
+    <div id="login-zone">
+        <input type="password" id="passInput" placeholder="AUTH_CODE">
+        <br>
+        <button class="btn" onclick="checkAccess()">Access</button>
+    </div>
+
+    <div id="vault-content" class="hidden">
+        <div id="sections-container">
+            </div>
+
+        <div id="admin-panel">
+            <p style="color: var(--accent); font-size: 0.7rem; letter-spacing: 2px;">ADMIN CONTROL</p>
+            <input type="text" id="newPass" placeholder="New Access Password" style="width: 60%; font-size: 0.8rem;">
+            <button class="btn" style="font-size: 0.6rem; padding: 8px 15px;" onclick="changePassword()">Set</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Configuration - Change these to match your GitHub
+    const GH_USER = "YOUR_USERNAME"; 
+    const GH_REPO = "YOUR_REPO_NAME";
+    const ADMIN_KEY = "0000aymen";
+    let accessPass = localStorage.getItem('vaultPassword') || "0000";
+
+    function checkAccess() {
+        const val = document.getElementById('passInput').value;
+        if (val === ADMIN_KEY) {
+            showVault(true);
+        } else if (val === accessPass) {
+            showVault(false);
+        } else {
+            alert("DENIED");
+        }
+    }
+
+    function showVault(isAdmin) {
+        document.getElementById('login-zone').classList.add('hidden');
+        document.getElementById('vault-content').classList.remove('hidden');
+        if (isAdmin) document.getElementById('admin-panel').style.display = 'block';
+        loadFilesFromGitHub();
+    }
+
+    async function loadFilesFromGitHub() {
+        const container = document.getElementById('sections-container');
+        try {
+            // Using GitHub API to get recursive folder structure
+            const res = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/git/trees/main?recursive=1`);
+            const data = await res.json();
+            
+            const tree = data.tree;
+            const sections = {};
+
+            // Sort files into groups based on their folder path
+            tree.forEach(node => {
+                if (node.path.endsWith('.html') && node.path !== 'index.html') {
+                    const parts = node.path.split('/');
+                    const sectionName = parts.length > 1 ? parts[0] : "General";
+                    const fileName = parts[parts.length - 1];
+
+                    if (!sections[sectionName]) sections[sectionName] = [];
+                    sections[sectionName].push({ name: fileName, path: node.path });
+                }
+            });
+
+            container.innerHTML = '';
+            for (const section in sections) {
+                const sectionHtml = document.createElement('div');
+                sectionHtml.innerHTML = `<div class="section-title">${section}</div>`;
+                
+                sections[section].forEach(file => {
+                    const item = document.createElement('a');
+                    item.href = file.path;
+                    item.className = 'lecture-item';
+                    item.innerHTML = `<span>${file.name.replace('.html', '')}</span><span style="color:var(--accent)">→</span>`;
+                    sectionHtml.appendChild(item);
+                });
+                container.appendChild(sectionHtml);
+            }
+        } catch (e) {
+            container.innerHTML = "Error syncing with GitHub Repository.";
+        }
+    }
+
+    function changePassword() {
+        const p = document.getElementById('newPass').value;
+        if(p) {
+            localStorage.setItem('vaultPassword', p);
+            alert("Password updated.");
+        }
+    }
+</script>
+
+</body>
+</html>
